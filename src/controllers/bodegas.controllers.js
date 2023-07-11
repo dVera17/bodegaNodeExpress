@@ -25,7 +25,7 @@ const addBodega = (req, res) => {
     }
 }
 
-export const methodsHTTP = {
+export const methodsBodegas = {
     getBodegas,
     addBodega
 }
