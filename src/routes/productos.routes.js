@@ -4,5 +4,6 @@ const router = Router();
 
 router.get('/', methodsProductos.getProductos);
 router.get('/total', methodsProductos.getTotalProductos);
+router.post('/', methodsProductos.addProducto);
 
 export default router;
