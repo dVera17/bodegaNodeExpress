@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { methodsInventarios } from "../controllers/inventarios.controllers.js";
+import { methodsInventarios } from "../controladores/inventarios.controllers.js";
 
 const router = Router();
 
