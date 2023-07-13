@@ -1,4 +1,6 @@
 import getConn from "../db/database.js";
+import { plainToClass } from 'class-transformer';
+import { bodegas } from '../../controller/bodegas.js';
 
 const getBodegas = (req, res) => {
     try {
@@ -14,14 +16,15 @@ const getBodegas = (req, res) => {
 
 const addBodega = (req, res) => {
     try {
+        let dataSend = plainToClass(bodegas, req.body);
+        let dataArray = [dataSend.name, dataSend.idResponsable, dataSend.status, dataSend.createdBy, dataSend.updatesBy]
         const conn = getConn();
-        const { nombre, id_responsable, estado, created_by, update_by } = req.body;
-        conn.query('INSERT INTO bodegas(nombre, id_responsable, estado, created_by, update_by) VALUES(?, ?, ?, ?, ?);', [nombre, id_responsable, estado, created_by, update_by], (err, data, fields) => {
+        conn.query(`INSERT INTO bodegas(nombre, id_responsable, estado, created_by, update_by) VALUES(?, ?, ?, ?, ?);`, dataArray, (err, data, fields) => {
             if (err) console.log(err);
             res.json(data);
         });
     } catch (error) {
-        res.status(500).send(error.message);
+        res.status(error.status).send(error.message);
     }
 }
 

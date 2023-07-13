@@ -1,11 +1,14 @@
 import getConn from "../db/database.js";
+import { plainToClass } from 'class-transformer';
+import inventarios from "../../controller/inventarios.js"
 
 const addInventarios = (req, res) => {
     try {
+        let dataSend = plainToClass(inventarios, req.body);
+        let dataArray = [ dataSend.idProducto, dataSend.idBodega, dataSend.quantity]
         const conn = getConn();
-        const { id_producto, id_bodega, cantidad } = req.body;
         // Verificar si la combinación de producto y bodega ya existe en el inventario
-        conn.query('SELECT * FROM inventarios WHERE id_producto = ? AND id_bodega = ?', [id_producto, id_bodega], (err, rows) => {
+        conn.query('SELECT * FROM inventarios WHERE id_producto = ? AND id_bodega = ?', [dataSend.idProducto, dataSend.idBodega], (err, rows) => {
             if (err) {
                 console.log(err);
                 res.status(500).send('Error en la consulta de inventarios');
@@ -14,7 +17,7 @@ const addInventarios = (req, res) => {
 
             if (rows.length === 0) {
                 // Combinación de producto y bodega no existe, realizar un INSERT
-                conn.query('INSERT INTO inventarios (id_producto, id_bodega, cantidad) VALUES (?, ?, ?)', [id_producto, id_bodega, cantidad], (err, result) => {
+                conn.query('INSERT INTO inventarios (id_producto, id_bodega, cantidad) VALUES (?, ?, ?)', dataArray, (err, result) => {
                     if (err) {
                         console.log(err);
                         res.status(500).send('Error al insertar en el inventario');
@@ -24,8 +27,8 @@ const addInventarios = (req, res) => {
                 });
             } else {
                 const existingCantidad = rows[0].cantidad;
-                const newCantidad = existingCantidad + cantidad;
-                conn.query('UPDATE inventarios SET cantidad = ? WHERE id_producto = ? AND id_bodega = ?', [newCantidad, id_producto, id_bodega], (err, result) => {
+                const newCantidad = existingCantidad + dataSend.quantity;
+                conn.query('UPDATE inventarios SET cantidad = ? WHERE id_producto = ? AND id_bodega = ?', [newCantidad, dataSend.idProducto, dataSend.idBodega], (err, result) => {
                     if (err) {
                         console.log(err);
                         res.status(500).send('Error al actualizar el inventario');
